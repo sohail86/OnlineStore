@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./src/OnlineStore.WebAPI/Dockerfile
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=DockerDev
+    depends_on:
+      - sqlserver
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    container_name: sqlserver
+    command: /bin/bash ./entrypoint.sh
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Password123
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./db-scripts/docker-entrypoint.sh:/entrypoint.sh
+      - ./db-scripts/docker-db-init.sh:/db-init.sh
+      - ./db-scripts/mssql-cars.sql:/db-init.sql
