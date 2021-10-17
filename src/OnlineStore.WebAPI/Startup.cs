@@ -2,11 +2,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using OnlineStore.Infrastructure.Data;
+using OnlineStore.Infrastructure.IoC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +31,14 @@ namespace OnlineStore.WebAPI
         {
 
             services.AddControllers();
+
+            // Register Database
+            services.AddDbContext<StoreContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Register the DI
+            DependencyContainer.RegisterServices(services);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OnlineStore.WebAPI", Version = "v1" });
