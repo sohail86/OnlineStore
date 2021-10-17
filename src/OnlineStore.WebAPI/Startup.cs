@@ -1,19 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using OnlineStore.Infrastructure.Data;
 using OnlineStore.Infrastructure.IoC;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace OnlineStore.WebAPI
 {
@@ -65,6 +59,26 @@ namespace OnlineStore.WebAPI
             {
                 endpoints.MapControllers();
             });
+
+            // Update Database
+            UpdateDatabase(app);
+        }
+
+        /// <summary>
+        /// Run the database migration and seed the database with the data
+        /// </summary>
+        /// <param name="app"></param>
+        private static void UpdateDatabase(IApplicationBuilder app)
+        {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<StoreContext>())
+                {
+                    context.Database.Migrate();
+
+                    new Infrastructure.Seed.DataSeeder(context).SeedData();
+                }
+            }
         }
     }
 }

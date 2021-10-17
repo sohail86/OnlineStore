@@ -12,13 +12,6 @@ namespace OnlineStore.Infrastructure.Data
     {
         public StoreContext() { }
         public StoreContext(DbContextOptions<StoreContext> options) : base(options) { }
-        protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlServer("Server=localhost;Database=Store;User Id=sa;password=Password123;Trusted_Connection=False;MultipleActiveResultSets=true;");
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-
-            // modelBuilder.Entity<Product>().HasKey(x => x.Product_Code);
-        }
 
         public DbSet<Product> Products { get; set; }
     }
